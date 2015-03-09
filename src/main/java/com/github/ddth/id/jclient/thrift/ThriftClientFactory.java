@@ -53,7 +53,7 @@ public class ThriftClientFactory {
         final ThriftClientPool<TIdService.Client, TIdService.Iface> pool = new ThriftClientPool<TIdService.Client, TIdService.Iface>();
         pool.setClientClass(TIdService.Client.class).setClientInterface(TIdService.Iface.class);
         pool.setTProtocolFactory(protocolFactory(host, port));
-        pool.setPoolConfig(new PoolConfig().setMaxActive(512).setMaxWaitTime(10000));
+        pool.setPoolConfig(new PoolConfig().setMaxActive(128).setMaxWaitTime(10000));
         pool.init();
         return pool;
     }
