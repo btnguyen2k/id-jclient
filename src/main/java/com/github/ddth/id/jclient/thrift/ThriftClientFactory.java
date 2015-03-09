@@ -31,7 +31,9 @@ public class ThriftClientFactory {
         ITProtocolFactory protocolFactory = new ITProtocolFactory() {
             @Override
             public TProtocol create() {
-                TTransport transport = new TFramedTransport(new TSocket(host, port));
+                TSocket socket = new TSocket(host, port);
+                socket.setTimeout(10000);
+                TTransport transport = new TFramedTransport(socket);
                 TProtocol protocol = new TCompactProtocol(transport);
                 return protocol;
             }
@@ -51,7 +53,7 @@ public class ThriftClientFactory {
         final ThriftClientPool<TIdService.Client, TIdService.Iface> pool = new ThriftClientPool<TIdService.Client, TIdService.Iface>();
         pool.setClientClass(TIdService.Client.class).setClientInterface(TIdService.Iface.class);
         pool.setTProtocolFactory(protocolFactory(host, port));
-        pool.setPoolConfig(new PoolConfig().setMaxActive(1024).setMaxWaitTime(10000));
+        pool.setPoolConfig(new PoolConfig().setMaxActive(512).setMaxWaitTime(10000));
         pool.init();
         return pool;
     }
