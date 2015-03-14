@@ -1,6 +1,11 @@
 package qnd;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.thrift.protocol.TCompactProtocol;
+import org.apache.thrift.protocol.TProtocol;
+import org.apache.thrift.transport.TFramedTransport;
+import org.apache.thrift.transport.TSocket;
+import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
 
 import test.utils.Benchmark;
@@ -15,17 +20,25 @@ public class QndBenchmarkThriftClientPing extends BaseQndThriftClient {
 
     private static void runTest(
             final ThriftClientPool<TIdService.Client, TIdService.Iface> clientPool,
-            final int numRuns, final int numThreads, final int numNamespaces)
-            throws TTransportException {
+            final String host, final int port, final int numRuns, final int numThreads,
+            final int numNamespaces) throws TTransportException {
+
+        TSocket socket = new TSocket(host, port);
+        socket.setTimeout(10000);
+        TTransport transport = new TFramedTransport(socket);
+        TProtocol protocol = new TCompactProtocol(transport);
+        transport.open();
+        final TIdService.Iface client = new TIdService.Client(protocol);
+
         BenchmarkResult result = new Benchmark(new Operation() {
             @Override
             public void run(int runId) {
                 try {
-                    TIdService.Iface client = clientPool.borrowObject();
+                    // TIdService.Iface client = clientPool.borrowObject();
                     try {
                         client.ping();
                     } finally {
-                        clientPool.returnObject(client);
+                        // clientPool.returnObject(client);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -33,6 +46,8 @@ public class QndBenchmarkThriftClientPing extends BaseQndThriftClient {
             }
         }, numRuns, numThreads).run();
         System.out.println(result.summarize());
+
+        transport.close();
     }
 
     /**
@@ -72,7 +87,7 @@ public class QndBenchmarkThriftClientPing extends BaseQndThriftClient {
         }
 
         for (int i = 0; i < 10; i++) {
-            runTest(clientPool, numRuns, numThreads, numNamespaces);
+            runTest(clientPool, thriftHost, thriftPort, numRuns, numThreads, numNamespaces);
         }
 
         clientPool.destroy();
