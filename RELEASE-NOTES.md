@@ -1,11 +1,10 @@
-ID Server Release Notes
-=======================
+id-jclient Release Notes
+========================
 
-Server to generate IDs - by btnguyen2k.
+Java client for [https://github.com/btnguyen2k/id-server](https://github.com/btnguyen2k/id-server).
 
-2015-02-23: v0.1.0
+2015-05-05: v0.1.0
 ------------------
 First release:
 
-- REST & Thrift APIs
-- ID engines: Snowflake, JDBC, ZooKeeper, Redis
+- REST & Thrift client
