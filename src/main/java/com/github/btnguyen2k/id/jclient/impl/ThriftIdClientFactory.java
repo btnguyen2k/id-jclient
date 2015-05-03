@@ -30,6 +30,10 @@ public class ThriftIdClientFactory {
                 }
             });
 
+    public static void cleanup() {
+        cache.invalidateAll();
+    }
+
     /**
      * Helper method to create a new {@link ThriftIdClient} instance.
      * 
